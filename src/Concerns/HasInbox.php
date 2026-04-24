@@ -21,7 +21,7 @@ trait HasInbox
 
     public function receivedMessages(): BelongsToMany
     {
-        return $this->belongsToMany(Message::class, 'message_recipients', 'recipient_id', 'message_id')
+        return $this->belongsToMany(Message::class, 'inbox_message_recipients', 'recipient_id', 'message_id')
             ->withPivot('read_at', 'starred_at', 'deleted_at')
             ->withTimestamps();
     }

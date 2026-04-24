@@ -8,14 +8,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('messages', function (Blueprint $table) {
+        Schema::table('inbox_messages', function (Blueprint $table) {
             $table->nullableMorphs('tenant');
         });
     }
 
     public function down(): void
     {
-        Schema::table('messages', function (Blueprint $table) {
+        Schema::table('inbox_messages', function (Blueprint $table) {
             $table->dropMorphs('tenant');
         });
     }

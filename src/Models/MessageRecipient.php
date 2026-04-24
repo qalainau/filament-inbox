@@ -12,6 +12,8 @@ class MessageRecipient extends Model
     /** @use HasFactory<\FilamentInbox\Database\Factories\MessageRecipientFactory> */
     use HasFactory;
 
+    protected $table = 'inbox_message_recipients';
+
     protected $fillable = [
         'message_id',
         'recipient_id',

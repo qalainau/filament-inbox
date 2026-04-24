@@ -8,9 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('message_recipients', function (Blueprint $table) {
+        Schema::create('inbox_message_recipients', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('message_id')->constrained('messages')->cascadeOnDelete();
+            $table->foreignId('message_id')->constrained('inbox_messages')->cascadeOnDelete();
             $table->foreignId('recipient_id')->constrained('users')->cascadeOnDelete();
             $table->timestamp('read_at')->nullable();
             $table->timestamp('starred_at')->nullable();
@@ -24,6 +24,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('message_recipients');
+        Schema::dropIfExists('inbox_message_recipients');
     }
 };

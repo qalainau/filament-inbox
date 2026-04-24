@@ -8,11 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('messages', function (Blueprint $table) {
+        Schema::create('inbox_messages', function (Blueprint $table) {
             $table->id();
             $table->foreignId('sender_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('parent_id')->nullable()->constrained('messages')->nullOnDelete();
-            $table->foreignId('thread_id')->nullable()->constrained('messages')->nullOnDelete();
+            $table->foreignId('parent_id')->nullable()->constrained('inbox_messages')->nullOnDelete();
+            $table->foreignId('thread_id')->nullable()->constrained('inbox_messages')->nullOnDelete();
             $table->string('subject');
             $table->text('body');
             $table->timestamp('sender_deleted_at')->nullable();
@@ -25,6 +25,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('messages');
+        Schema::dropIfExists('inbox_messages');
     }
 };

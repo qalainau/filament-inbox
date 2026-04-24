@@ -18,6 +18,8 @@ class Message extends Model
     /** @use HasFactory<\FilamentInbox\Database\Factories\MessageFactory> */
     use HasFactory;
 
+    protected $table = 'inbox_messages';
+
     protected $fillable = [
         'sender_id',
         'parent_id',
@@ -78,7 +80,7 @@ class Message extends Model
 
     public function recipients(): BelongsToMany
     {
-        return $this->belongsToMany(FilamentInboxServiceProvider::getUserModel(), 'message_recipients', 'message_id', 'recipient_id')
+        return $this->belongsToMany(FilamentInboxServiceProvider::getUserModel(), 'inbox_message_recipients', 'message_id', 'recipient_id')
             ->withPivot('read_at', 'starred_at', 'deleted_at')
             ->withTimestamps();
     }
