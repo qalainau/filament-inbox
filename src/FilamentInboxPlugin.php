@@ -13,9 +13,11 @@ use FilamentInbox\Pages\Trash;
 use FilamentInbox\Pages\ViewMessage;
 use FilamentInbox\Pages\ViewSentMessage;
 use FilamentInbox\Widgets\InboxStatsWidget;
+use Filament\Models\Contracts\HasAvatar;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Illuminate\Support\HtmlString;
 
 class FilamentInboxPlugin implements Plugin
 {
@@ -73,16 +75,12 @@ class FilamentInboxPlugin implements Plugin
         }
 
         return $query->get()->mapWithKeys(function ($user) {
-            $initials = collect(explode(' ', $user->name))
-                ->map(fn (string $word) => mb_strtoupper(mb_substr($word, 0, 1)))
-                ->take(2)
-                ->implode('');
-
+            $avatar = static::renderAvatar($user);
             $name = e($user->name);
             $email = e($user->email);
 
             $html = '<div style="display:flex;align-items:center;gap:0.75rem;">'
-                .'<span style="display:flex;align-items:center;justify-content:center;width:2rem;height:2rem;border-radius:9999px;background:#dbeafe;color:#1d4ed8;font-size:0.75rem;font-weight:700;flex-shrink:0;">'.$initials.'</span>'
+                .$avatar
                 .'<div style="display:flex;flex-direction:column;">'
                 .'<span style="font-size:0.875rem;font-weight:500;">'.$name.'</span>'
                 .'<span style="font-size:0.75rem;color:#6b7280;">'.$email.'</span>'
@@ -112,6 +110,61 @@ class FilamentInboxPlugin implements Plugin
         }
 
         return null;
+    }
+
+    /**
+     * Render an avatar HTML element for a user.
+     */
+    public static function renderAvatar(Model $user, int $size = 32): string
+    {
+        $avatarUrl = null;
+
+        if ($user instanceof HasAvatar) {
+            $avatarUrl = $user->getFilamentAvatarUrl();
+        } elseif (isset($user->avatar_url)) {
+            $avatarUrl = $user->avatar_url;
+        }
+
+        if ($avatarUrl) {
+            return '<img src="'.e($avatarUrl).'" alt="'.e($user->name).'" style="width:'.$size.'px;height:'.$size.'px;border-radius:9999px;object-fit:cover;flex-shrink:0;" />';
+        }
+
+        $initials = collect(explode(' ', $user->name))
+            ->map(fn (string $word) => mb_strtoupper(mb_substr($word, 0, 1)))
+            ->take(2)
+            ->implode('');
+
+        return '<span style="display:flex;align-items:center;justify-content:center;width:'.$size.'px;height:'.$size.'px;border-radius:9999px;background:#dbeafe;color:#1d4ed8;font-size:'.($size * 0.375).'px;font-weight:700;flex-shrink:0;">'.$initials.'</span>';
+    }
+
+    /**
+     * Render an avatar + name HTML element for a user name, using the sender model.
+     */
+    public static function renderAvatarWithName(string $name, ?Model $user = null): HtmlString
+    {
+        $avatar = $user
+            ? static::renderAvatar($user)
+            : static::renderInitialsAvatar($name);
+
+        return new HtmlString(
+            '<div style="display:flex;align-items:center;gap:0.5rem;">'
+            .$avatar
+            .'<span>'.e($name).'</span>'
+            .'</div>'
+        );
+    }
+
+    /**
+     * Render an initials-only avatar (no user model needed).
+     */
+    public static function renderInitialsAvatar(string $name, int $size = 32): string
+    {
+        $initials = collect(explode(' ', $name))
+            ->map(fn (string $word) => mb_strtoupper(mb_substr($word, 0, 1)))
+            ->take(2)
+            ->implode('');
+
+        return '<span style="display:flex;align-items:center;justify-content:center;width:'.$size.'px;height:'.$size.'px;border-radius:9999px;background:#dbeafe;color:#1d4ed8;font-size:'.($size * 0.375).'px;font-weight:700;flex-shrink:0;">'.$initials.'</span>';
     }
 
     protected function registerTenantScopes(): void

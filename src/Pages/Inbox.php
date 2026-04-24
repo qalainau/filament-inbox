@@ -26,7 +26,6 @@ use FilamentInbox\Models\Message;
 use FilamentInbox\Models\MessageRecipient;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\HtmlString;
 
 class Inbox extends Page implements HasTable
 {
@@ -92,20 +91,7 @@ class Inbox extends Page implements HasTable
                     ->label(__('filament-inbox::messages.from'))
                     ->searchable()
                     ->weight(fn (MessageRecipient $record): string => $record->read_at === null ? 'bold' : 'normal')
-                    ->formatStateUsing(function (string $state): HtmlString {
-                        $initials = collect(explode(' ', $state))
-                            ->map(fn (string $word) => mb_strtoupper(mb_substr($word, 0, 1)))
-                            ->take(2)
-                            ->implode('');
-                        $name = e($state);
-
-                        return new HtmlString(
-                            '<div style="display:flex;align-items:center;gap:0.5rem;">'
-                            .'<span style="display:flex;align-items:center;justify-content:center;width:2rem;height:2rem;border-radius:9999px;background:#dbeafe;color:#1d4ed8;font-size:0.75rem;font-weight:700;flex-shrink:0;">'.$initials.'</span>'
-                            .'<span>'.$name.'</span>'
-                            .'</div>'
-                        );
-                    }),
+                    ->formatStateUsing(fn (string $state, MessageRecipient $record) => FilamentInboxPlugin::renderAvatarWithName($state, $record->message->sender)),
 
                 TextColumn::make('message.subject')
                     ->label(__('filament-inbox::messages.subject'))

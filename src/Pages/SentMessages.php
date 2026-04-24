@@ -10,8 +10,8 @@ use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use FilamentInbox\FilamentInboxPlugin;
 use FilamentInbox\Models\Message;
-use Illuminate\Support\HtmlString;
 
 class SentMessages extends Page implements HasTable
 {
@@ -56,19 +56,7 @@ class SentMessages extends Page implements HasTable
                 TextColumn::make('recipients_list')
                     ->label(__('filament-inbox::messages.to'))
                     ->state(fn (Message $record): string => $record->recipients->pluck('name')->join(', '))
-                    ->formatStateUsing(function (string $state, Message $record): HtmlString {
-                        $first = $record->recipients->first();
-                        $initials = $first ? collect(explode(' ', $first->name))
-                            ->map(fn (string $word) => mb_strtoupper(mb_substr($word, 0, 1)))
-                            ->take(2)->implode('') : '?';
-
-                        return new HtmlString(
-                            '<div style="display:flex;align-items:center;gap:0.5rem;">'
-                            .'<span style="display:flex;align-items:center;justify-content:center;width:2rem;height:2rem;border-radius:9999px;background:#dbeafe;color:#1d4ed8;font-size:0.75rem;font-weight:700;flex-shrink:0;">'.$initials.'</span>'
-                            .'<span>'.e($state).'</span>'
-                            .'</div>'
-                        );
-                    }),
+                    ->formatStateUsing(fn (string $state, Message $record) => FilamentInboxPlugin::renderAvatarWithName($state, $record->recipients->first())),
 
                 TextColumn::make('subject')
                     ->label(__('filament-inbox::messages.subject'))
