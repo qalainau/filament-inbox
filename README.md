@@ -51,9 +51,10 @@ Email-like inbox messaging plugin for [Filament v5](https://filamentphp.com). Ad
 composer require qalainau/filament-inbox
 ```
 
-Run migrations:
+Run the notifications migration (required for Filament database notifications):
 
 ```bash
+php artisan make:notifications-table
 php artisan migrate
 ```
 
@@ -68,7 +69,7 @@ class User extends Authenticatable
 }
 ```
 
-Register the plugin in your Filament panel:
+Register the plugin in your Filament panel. `databaseNotifications()` is required to enable Filament's notification system:
 
 ```php
 use FilamentInbox\FilamentInboxPlugin;
@@ -80,6 +81,8 @@ public function panel(Panel $panel): Panel
         ->plugin(FilamentInboxPlugin::make());
 }
 ```
+
+> **Note:** `databaseNotifications()` requires the `notifications` table. If you see an error about a missing table, run `php artisan make:notifications-table && php artisan migrate`.
 
 ## Configuration
 
