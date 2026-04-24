@@ -9,23 +9,38 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
+use FilamentInbox\Events\MessageStarred;
+use FilamentInbox\Events\MessageTrashed;
 use FilamentInbox\Models\MessageRecipient;
 
 class StarredMessages extends Page implements HasTable
 {
     use InteractsWithTable;
 
-    protected static ?string $title = 'Starred';
-
-    protected static ?string $navigationLabel = 'Starred';
+    protected static ?string $navigationLabel = null;
 
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::Star;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Messages';
+    protected static string|\UnitEnum|null $navigationGroup = null;
 
     protected static ?int $navigationSort = 3;
 
     protected string $view = 'filament-inbox::pages.inbox';
+
+    public static function getNavigationLabel(): string
+    {
+        return __('filament-inbox::messages.starred');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('filament-inbox::messages.navigation_group');
+    }
+
+    public function getTitle(): string
+    {
+        return __('filament-inbox::messages.starred');
+    }
 
     public function table(Table $table): Table
     {
@@ -40,16 +55,16 @@ class StarredMessages extends Page implements HasTable
             ->defaultSort('starred_at', 'desc')
             ->columns([
                 TextColumn::make('message.sender.name')
-                    ->label('From')
+                    ->label(__('filament-inbox::messages.from'))
                     ->searchable(),
 
                 TextColumn::make('message.subject')
-                    ->label('Subject')
+                    ->label(__('filament-inbox::messages.subject'))
                     ->searchable()
                     ->limit(60),
 
                 TextColumn::make('starred_at')
-                    ->label('Starred At')
+                    ->label(__('filament-inbox::messages.starred_at'))
                     ->dateTime()
                     ->sortable(),
             ])
@@ -57,13 +72,19 @@ class StarredMessages extends Page implements HasTable
                 Action::make('unstar')
                     ->icon(Heroicon::Star)
                     ->color('warning')
-                    ->action(fn (MessageRecipient $record) => $record->update(['starred_at' => null])),
+                    ->action(function (MessageRecipient $record): void {
+                        $record->update(['starred_at' => null]);
+                        MessageStarred::dispatch($record->fresh(), false);
+                    }),
 
                 Action::make('moveToTrash')
                     ->icon(Heroicon::Trash)
                     ->color('danger')
                     ->requiresConfirmation()
-                    ->action(fn (MessageRecipient $record) => $record->update(['deleted_at' => now()])),
+                    ->action(function (MessageRecipient $record): void {
+                        $record->update(['deleted_at' => now()]);
+                        MessageTrashed::dispatch($record->fresh());
+                    }),
             ])
             ->recordUrl(fn (MessageRecipient $record): string => ViewMessage::getUrl(['record' => $record->id]));
     }

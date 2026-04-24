@@ -4,12 +4,14 @@ namespace FilamentInbox\Models;
 
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
+use FilamentInbox\FilamentInboxServiceProvider;
 use FilamentInbox\Pages\Inbox;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Message extends Model
 {
@@ -23,6 +25,8 @@ class Message extends Model
         'subject',
         'body',
         'sender_deleted_at',
+        'tenant_id',
+        'tenant_type',
     ];
 
     protected function casts(): array
@@ -37,9 +41,14 @@ class Message extends Model
         return \FilamentInbox\Database\Factories\MessageFactory::new();
     }
 
+    public function tenant(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
     public function sender(): BelongsTo
     {
-        return $this->belongsTo(config('auth.providers.users.model'), 'sender_id');
+        return $this->belongsTo(FilamentInboxServiceProvider::getUserModel(), 'sender_id');
     }
 
     public function parent(): BelongsTo
@@ -69,19 +78,19 @@ class Message extends Model
 
     public function recipients(): BelongsToMany
     {
-        return $this->belongsToMany(config('auth.providers.users.model'), 'message_recipients', 'message_id', 'recipient_id')
+        return $this->belongsToMany(FilamentInboxServiceProvider::getUserModel(), 'message_recipients', 'message_id', 'recipient_id')
             ->withPivot('read_at', 'starred_at', 'deleted_at')
             ->withTimestamps();
     }
 
     public function notifyRecipients(): void
     {
-        $sender = $this->sender ?? $this->belongsTo(config('auth.providers.users.model'), 'sender_id')->first();
+        $sender = $this->sender ?? $this->belongsTo(FilamentInboxServiceProvider::getUserModel(), 'sender_id')->first();
         $isReply = $this->parent_id !== null;
 
         $title = $isReply
-            ? "{$sender->name} replied: {$this->subject}"
-            : "New message from {$sender->name}";
+            ? __('filament-inbox::messages.replied', ['name' => $sender->name, 'subject' => $this->subject])
+            : __('filament-inbox::messages.new_message_from', ['name' => $sender->name]);
 
         foreach ($this->messageRecipients()->with('recipient')->get() as $mr) {
             Notification::make()
@@ -90,7 +99,7 @@ class Message extends Model
                 ->icon($isReply ? 'heroicon-o-arrow-uturn-left' : 'heroicon-o-envelope')
                 ->actions([
                     Action::make('view')
-                        ->label('View')
+                        ->label(__('filament-inbox::messages.inbox'))
                         ->url(Inbox::getUrl())
                         ->markAsRead(),
                 ])

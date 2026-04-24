@@ -48,7 +48,7 @@
                             </span>
                             @if ($isSentByMe)
                                 <span style="font-size: 0.5625rem; padding: 0.0625rem 0.375rem; border-radius: 9999px; font-weight: 500; background-color: #f3f4f6; color: #6b7280; letter-spacing: 0.025em;">
-                                    You
+                                    {{ __('filament-inbox::messages.you') }}
                                 </span>
                             @endif
                         </div>
@@ -56,7 +56,7 @@
                             {{ Str::limit(strip_tags($threadMessage->body), 100) }}
                         </p>
                         <p x-show="expanded" style="font-size: 0.75rem; margin: 0.125rem 0 0; color: #9ca3af;">
-                            To: {{ $threadMessage->recipients->pluck('name')->join(', ') }}
+                            {{ __('filament-inbox::messages.to') }}: {{ $threadMessage->recipients->pluck('name')->join(', ') }}
                         </p>
                     </div>
 

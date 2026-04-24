@@ -15,7 +15,7 @@ class MessageRecipientFactory extends Factory
 
     public function definition(): array
     {
-        $userModel = config('auth.providers.users.model');
+        $userModel = \FilamentInbox\FilamentInboxServiceProvider::getUserModel();
 
         return [
             'message_id' => Message::factory(),

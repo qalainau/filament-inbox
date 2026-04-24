@@ -61,13 +61,13 @@ class ViewSentMessage extends Page
     {
         return [
             Action::make('back')
-                ->label('Back to Sent')
+                ->label(__('filament-inbox::messages.back_to_sent'))
                 ->icon(Heroicon::ArrowLeft)
                 ->color('gray')
                 ->url(SentMessages::getUrl()),
 
             Action::make('delete')
-                ->label('Delete')
+                ->label(__('filament-inbox::messages.delete'))
                 ->icon(Heroicon::Trash)
                 ->color('danger')
                 ->requiresConfirmation()
@@ -75,7 +75,7 @@ class ViewSentMessage extends Page
                     $this->message->update(['sender_deleted_at' => now()]);
 
                     Notification::make()
-                        ->title('Message removed from sent')
+                        ->title(__('filament-inbox::messages.message_removed_from_sent'))
                         ->success()
                         ->send();
 

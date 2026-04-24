@@ -17,6 +17,11 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use FilamentInbox\Events\MessageRead;
+use FilamentInbox\Events\MessageSent;
+use FilamentInbox\Events\MessageStarred;
+use FilamentInbox\Events\MessageTrashed;
+use FilamentInbox\FilamentInboxPlugin;
 use FilamentInbox\Models\Message;
 use FilamentInbox\Models\MessageRecipient;
 use Illuminate\Database\Eloquent\Builder;
@@ -28,11 +33,16 @@ class Inbox extends Page implements HasTable
 
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::Inbox;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Messages';
+    protected static string|\UnitEnum|null $navigationGroup = null;
 
     protected static ?int $navigationSort = 1;
 
     protected string $view = 'filament-inbox::pages.inbox';
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('filament-inbox::messages.navigation_group');
+    }
 
     public static function getNavigationBadge(): ?string
     {
@@ -69,37 +79,41 @@ class Inbox extends Page implements HasTable
                     ->falseIcon(Heroicon::OutlinedStar)
                     ->trueColor('warning')
                     ->falseColor('gray')
-                    ->action(fn (MessageRecipient $record) => $record->update([
-                        'starred_at' => $record->starred_at ? null : now(),
-                    ])),
+                    ->action(function (MessageRecipient $record): void {
+                        $wasStarred = $record->starred_at !== null;
+                        $record->update([
+                            'starred_at' => $wasStarred ? null : now(),
+                        ]);
+                        MessageStarred::dispatch($record->fresh(), ! $wasStarred);
+                    }),
 
                 TextColumn::make('message.sender.name')
-                    ->label('From')
+                    ->label(__('filament-inbox::messages.from'))
                     ->searchable()
                     ->weight(fn (MessageRecipient $record): string => $record->read_at === null ? 'bold' : 'normal'),
 
                 TextColumn::make('message.subject')
-                    ->label('Subject')
+                    ->label(__('filament-inbox::messages.subject'))
                     ->searchable()
                     ->weight(fn (MessageRecipient $record): string => $record->read_at === null ? 'bold' : 'normal')
                     ->limit(60),
 
                 TextColumn::make('created_at')
-                    ->label('Received')
+                    ->label(__('filament-inbox::messages.received'))
                     ->dateTime()
                     ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('sender')
-                    ->label('From')
+                    ->label(__('filament-inbox::messages.from'))
                     ->relationship('message.sender', 'name'),
 
                 Filter::make('is_unread')
-                    ->label('Unread Only')
+                    ->label(__('filament-inbox::messages.unread_only'))
                     ->query(fn (Builder $query) => $query->whereNull('read_at')),
 
                 Filter::make('is_starred')
-                    ->label('Starred Only')
+                    ->label(__('filament-inbox::messages.starred_only'))
                     ->query(fn (Builder $query) => $query->whereNotNull('starred_at')),
             ])
             ->recordActions([
@@ -109,6 +123,7 @@ class Inbox extends Page implements HasTable
                     ->action(function (MessageRecipient $record): void {
                         if ($record->read_at === null) {
                             $record->update(['read_at' => now()]);
+                            MessageRead::dispatch($record->fresh());
                         }
                     }),
 
@@ -116,43 +131,51 @@ class Inbox extends Page implements HasTable
                     ->icon(Heroicon::Trash)
                     ->color('danger')
                     ->requiresConfirmation()
-                    ->action(fn (MessageRecipient $record) => $record->update(['deleted_at' => now()])),
+                    ->action(function (MessageRecipient $record): void {
+                        $record->update(['deleted_at' => now()]);
+                        MessageTrashed::dispatch($record->fresh());
+                    }),
             ])
             ->toolbarActions([
                 BulkAction::make('markAsRead')
                     ->icon(Heroicon::EnvelopeOpen)
-                    ->action(fn (Collection $records) => $records->each(fn (MessageRecipient $record) => $record->update(['read_at' => now()]))),
+                    ->action(fn (Collection $records) => $records->each(function (MessageRecipient $record): void {
+                        $record->update(['read_at' => now()]);
+                        MessageRead::dispatch($record->fresh());
+                    })),
 
                 BulkAction::make('moveToTrash')
                     ->icon(Heroicon::Trash)
                     ->color('danger')
                     ->requiresConfirmation()
                     ->deselectRecordsAfterCompletion()
-                    ->action(fn (Collection $records) => $records->each(fn (MessageRecipient $record) => $record->update(['deleted_at' => now()]))),
+                    ->action(fn (Collection $records) => $records->each(function (MessageRecipient $record): void {
+                        $record->update(['deleted_at' => now()]);
+                        MessageTrashed::dispatch($record->fresh());
+                    })),
             ])
             ->recordUrl(fn (MessageRecipient $record): string => ViewMessage::getUrl(['record' => $record->id]));
     }
 
     protected function getHeaderActions(): array
     {
-        $userModel = config('auth.providers.users.model');
-
         return [
             Action::make('compose')
-                ->label('Compose')
+                ->label(__('filament-inbox::messages.compose'))
                 ->icon(Heroicon::PencilSquare)
                 ->color('primary')
-                ->modalHeading('Compose Message')
+                ->modalHeading(__('filament-inbox::messages.compose_message'))
                 ->schema([
                     Select::make('recipient_ids')
-                        ->label('To')
+                        ->label(__('filament-inbox::messages.recipient_to'))
                         ->multiple()
-                        ->options(fn () => $userModel::where('id', '!=', auth()->id())->pluck('name', 'id'))
+                        ->options(fn () => FilamentInboxPlugin::getRecipientOptions())
                         ->searchable()
                         ->preload()
                         ->required(),
 
                     TextInput::make('subject')
+                        ->label(__('filament-inbox::messages.subject'))
                         ->required()
                         ->maxLength(255),
 
@@ -176,9 +199,10 @@ class Inbox extends Page implements HasTable
                     }
 
                     $message->notifyRecipients();
+                    MessageSent::dispatch($message);
 
                     Notification::make()
-                        ->title('Message sent successfully')
+                        ->title(__('filament-inbox::messages.message_sent'))
                         ->success()
                         ->send();
                 }),

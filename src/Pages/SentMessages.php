@@ -5,7 +5,6 @@ namespace FilamentInbox\Pages;
 use Filament\Actions\Action;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
@@ -17,17 +16,30 @@ class SentMessages extends Page implements HasTable
 {
     use InteractsWithTable;
 
-    protected static ?string $title = 'Sent';
-
-    protected static ?string $navigationLabel = 'Sent';
+    protected static ?string $navigationLabel = null;
 
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::PaperAirplane;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Messages';
+    protected static string|\UnitEnum|null $navigationGroup = null;
 
     protected static ?int $navigationSort = 2;
 
     protected string $view = 'filament-inbox::pages.inbox';
+
+    public static function getNavigationLabel(): string
+    {
+        return __('filament-inbox::messages.sent');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('filament-inbox::messages.navigation_group');
+    }
+
+    public function getTitle(): string
+    {
+        return __('filament-inbox::messages.sent');
+    }
 
     public function table(Table $table): Table
     {
@@ -41,29 +53,30 @@ class SentMessages extends Page implements HasTable
             ->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('recipients_list')
-                    ->label('To')
+                    ->label(__('filament-inbox::messages.to'))
                     ->state(fn (Message $record): string => $record->recipients->pluck('name')->join(', '))
                     ->limit(40),
 
                 TextColumn::make('subject')
+                    ->label(__('filament-inbox::messages.subject'))
                     ->searchable()
                     ->limit(60),
 
                 TextColumn::make('read_status')
-                    ->label('Status')
+                    ->label(__('filament-inbox::messages.status'))
                     ->state(function (Message $record): string {
                         $total = $record->messageRecipients->count();
                         $read = $record->messageRecipients->whereNotNull('read_at')->count();
 
                         if ($read === 0) {
-                            return 'Unread';
+                            return __('filament-inbox::messages.unread');
                         }
 
                         if ($read === $total) {
-                            return 'Read';
+                            return __('filament-inbox::messages.read');
                         }
 
-                        return "Read {$read}/{$total}";
+                        return __('filament-inbox::messages.read_count', ['read' => $read, 'total' => $total]);
                     })
                     ->icon(function (Message $record): Heroicon {
                         $total = $record->messageRecipients->count();
@@ -96,13 +109,13 @@ class SentMessages extends Page implements HasTable
                     ->badge(),
 
                 TextColumn::make('created_at')
-                    ->label('Sent At')
+                    ->label(__('filament-inbox::messages.sent_at'))
                     ->dateTime()
                     ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('recipient')
-                    ->label('To')
+                    ->label(__('filament-inbox::messages.to'))
                     ->relationship('recipients', 'name'),
             ])
             ->recordUrl(fn (Message $record): string => ViewSentMessage::getUrl(['record' => $record->id]))
@@ -111,7 +124,7 @@ class SentMessages extends Page implements HasTable
                     ->icon(Heroicon::Trash)
                     ->color('danger')
                     ->requiresConfirmation()
-                    ->modalHeading('Remove from Sent')
+                    ->modalHeading(__('filament-inbox::messages.remove_from_sent'))
                     ->action(fn (Message $record) => $record->update(['sender_deleted_at' => now()])),
             ]);
     }

@@ -2,6 +2,7 @@
 
 namespace FilamentInbox\Models;
 
+use FilamentInbox\FilamentInboxServiceProvider;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -40,6 +41,7 @@ class MessageRecipient extends Model
 
     public function recipient(): BelongsTo
     {
-        return $this->belongsTo(config('auth.providers.users.model'), 'recipient_id');
+        return $this->belongsTo(FilamentInboxServiceProvider::getUserModel(), 'recipient_id');
     }
+
 }
