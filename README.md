@@ -6,6 +6,19 @@
 
 Email-like inbox messaging plugin for [Filament v5](https://filamentphp.com). Add a complete internal messaging system to your admin panel — inbox, sent, starred, trash, threading, forwarding, read receipts, and more.
 
+## Screenshots
+
+### Inbox
+![Inbox](docs/images/inbox.png)
+
+### Thread View
+![Thread View](docs/images/thread.png)
+
+### Compose Message
+![Compose Message](docs/images/compose.png)
+
+### Sent Messages with Read Receipts
+![Sent Messages](docs/images/sent.png)
 
 ## Features
 
