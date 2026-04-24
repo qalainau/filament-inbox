@@ -125,16 +125,11 @@ class FilamentInboxPlugin implements Plugin
             $avatarUrl = $user->avatar_url;
         }
 
-        if ($avatarUrl) {
-            return '<img src="'.e($avatarUrl).'" alt="'.e($user->name).'" style="width:'.$size.'px;height:'.$size.'px;border-radius:9999px;object-fit:cover;flex-shrink:0;" />';
+        if (! $avatarUrl) {
+            $avatarUrl = 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&color=7F9CF5&background=EBF4FF&size='.$size;
         }
 
-        $initials = collect(explode(' ', $user->name))
-            ->map(fn (string $word) => mb_strtoupper(mb_substr($word, 0, 1)))
-            ->take(2)
-            ->implode('');
-
-        return '<span style="display:flex;align-items:center;justify-content:center;width:'.$size.'px;height:'.$size.'px;border-radius:9999px;background:#dbeafe;color:#1d4ed8;font-size:'.($size * 0.375).'px;font-weight:700;flex-shrink:0;">'.$initials.'</span>';
+        return '<img src="'.e($avatarUrl).'" alt="'.e($user->name).'" style="width:'.$size.'px;height:'.$size.'px;border-radius:9999px;object-fit:cover;flex-shrink:0;" />';
     }
 
     /**
@@ -159,12 +154,9 @@ class FilamentInboxPlugin implements Plugin
      */
     public static function renderInitialsAvatar(string $name, int $size = 32): string
     {
-        $initials = collect(explode(' ', $name))
-            ->map(fn (string $word) => mb_strtoupper(mb_substr($word, 0, 1)))
-            ->take(2)
-            ->implode('');
+        $url = 'https://ui-avatars.com/api/?name='.urlencode($name).'&color=7F9CF5&background=EBF4FF&size='.$size;
 
-        return '<span style="display:flex;align-items:center;justify-content:center;width:'.$size.'px;height:'.$size.'px;border-radius:9999px;background:#dbeafe;color:#1d4ed8;font-size:'.($size * 0.375).'px;font-weight:700;flex-shrink:0;">'.$initials.'</span>';
+        return '<img src="'.e($url).'" alt="'.e($name).'" style="width:'.$size.'px;height:'.$size.'px;border-radius:9999px;object-fit:cover;flex-shrink:0;" />';
     }
 
     protected function registerTenantScopes(): void
