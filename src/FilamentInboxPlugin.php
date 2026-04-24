@@ -117,17 +117,7 @@ class FilamentInboxPlugin implements Plugin
      */
     public static function renderAvatar(Model $user, int $size = 32): string
     {
-        $avatarUrl = null;
-
-        if ($user instanceof HasAvatar) {
-            $avatarUrl = $user->getFilamentAvatarUrl();
-        } elseif (isset($user->avatar_url)) {
-            $avatarUrl = $user->avatar_url;
-        }
-
-        if (! $avatarUrl) {
-            $avatarUrl = 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&color=7F9CF5&background=EBF4FF&size='.$size;
-        }
+        $avatarUrl = static::getAvatarUrl($user, $size);
 
         return '<img src="'.e($avatarUrl).'" alt="'.e($user->name).'" style="width:'.$size.'px;height:'.$size.'px;border-radius:9999px;object-fit:cover;flex-shrink:0;" />';
     }
@@ -147,6 +137,49 @@ class FilamentInboxPlugin implements Plugin
             .'<span>'.e($name).'</span>'
             .'</div>'
         );
+    }
+
+    /**
+     * Render stacked avatars + names for multiple users.
+     *
+     * @param  \Illuminate\Support\Collection<int, Model>  $users
+     */
+    public static function renderStackedAvatarsWithNames(Collection $users): HtmlString
+    {
+        $names = $users->pluck('name')->join(', ');
+
+        $avatars = $users->take(3)->map(function (Model $user, int $index) {
+            $margin = $index > 0 ? 'margin-left:-0.5rem;' : '';
+
+            return '<img src="'.e(static::getAvatarUrl($user)).'" alt="'.e($user->name).'" style="width:2rem;height:2rem;border-radius:9999px;object-fit:cover;border:2px solid white;'.$margin.'position:relative;z-index:'.(10 - $index).';" />';
+        })->implode('');
+
+        $extra = $users->count() > 3
+            ? '<span style="display:flex;align-items:center;justify-content:center;width:2rem;height:2rem;border-radius:9999px;background:#e5e7eb;font-size:0.7rem;font-weight:600;margin-left:-0.5rem;position:relative;z-index:1;">+'.($users->count() - 3).'</span>'
+            : '';
+
+        return new HtmlString(
+            '<div style="display:flex;align-items:center;gap:0.5rem;">'
+            .'<div style="display:flex;align-items:center;">'.$avatars.$extra.'</div>'
+            .'<span>'.e($names).'</span>'
+            .'</div>'
+        );
+    }
+
+    /**
+     * Get avatar URL for a user.
+     */
+    public static function getAvatarUrl(Model $user, int $size = 32): string
+    {
+        if ($user instanceof HasAvatar && ($url = $user->getFilamentAvatarUrl())) {
+            return $url;
+        }
+
+        if (isset($user->avatar_url) && $user->avatar_url) {
+            return $user->avatar_url;
+        }
+
+        return 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&color=7F9CF5&background=EBF4FF&size='.$size;
     }
 
     /**

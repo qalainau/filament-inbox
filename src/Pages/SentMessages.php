@@ -56,7 +56,10 @@ class SentMessages extends Page implements HasTable
                 TextColumn::make('recipients_list')
                     ->label(__('filament-inbox::messages.to'))
                     ->state(fn (Message $record): string => $record->recipients->pluck('name')->join(', '))
-                    ->formatStateUsing(fn (string $state, Message $record) => FilamentInboxPlugin::renderAvatarWithName($state, $record->recipients->first())),
+                    ->formatStateUsing(fn (string $state, Message $record) => $record->recipients->count() > 1
+                        ? FilamentInboxPlugin::renderStackedAvatarsWithNames($record->recipients)
+                        : FilamentInboxPlugin::renderAvatarWithName($state, $record->recipients->first())
+                    ),
 
                 TextColumn::make('subject')
                     ->label(__('filament-inbox::messages.subject'))
