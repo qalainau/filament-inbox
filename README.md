@@ -8,17 +8,13 @@ Email-like inbox messaging plugin for [Filament v5](https://filamentphp.com). Ad
 
 ## Screenshots
 
-### Inbox
-![Inbox](docs/images/inbox.png)
+| Inbox | Thread View |
+|-------|-------------|
+| ![Inbox](docs/images/inbox.png) | ![Thread](docs/images/thread.png) |
 
-### Thread View
-![Thread View](docs/images/thread.png)
-
-### Compose Message
-![Compose Message](docs/images/compose.png)
-
-### Sent Messages with Read Receipts
-![Sent Messages](docs/images/sent.png)
+| Compose Message | Sent Messages |
+|-----------------|---------------|
+| ![Compose](docs/images/compose.png) | ![Sent](docs/images/sent.png) |
 
 ## Features
 
