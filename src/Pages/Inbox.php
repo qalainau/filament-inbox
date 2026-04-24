@@ -165,6 +165,8 @@ class Inbox extends Page implements HasTable
                 ->icon(Heroicon::PencilSquare)
                 ->color('primary')
                 ->modalHeading(__('filament-inbox::messages.compose_message'))
+                ->slideOver()
+                ->closeModalByClickingAway(false)
                 ->schema([
                     Select::make('recipient_ids')
                         ->label(__('filament-inbox::messages.recipient_to'))
