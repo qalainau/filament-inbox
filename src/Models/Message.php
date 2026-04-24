@@ -4,6 +4,7 @@ namespace FilamentInbox\Models;
 
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
+use FilamentInbox\Database\Factories\MessageFactory;
 use FilamentInbox\FilamentInboxServiceProvider;
 use FilamentInbox\Pages\Inbox;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,10 +13,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Str;
 
 class Message extends Model
 {
-    /** @use HasFactory<\FilamentInbox\Database\Factories\MessageFactory> */
+    /** @use HasFactory<MessageFactory> */
     use HasFactory;
 
     protected $table = 'inbox_messages';
@@ -38,9 +40,9 @@ class Message extends Model
         ];
     }
 
-    protected static function newFactory(): \FilamentInbox\Database\Factories\MessageFactory
+    protected static function newFactory(): MessageFactory
     {
-        return \FilamentInbox\Database\Factories\MessageFactory::new();
+        return MessageFactory::new();
     }
 
     public function tenant(): MorphTo
@@ -97,7 +99,7 @@ class Message extends Model
         foreach ($this->messageRecipients()->with('recipient')->get() as $mr) {
             Notification::make()
                 ->title($title)
-                ->body(\Illuminate\Support\Str::limit(strip_tags($this->body), 80))
+                ->body(Str::limit(strip_tags($this->body), 80))
                 ->icon($isReply ? 'heroicon-o-arrow-uturn-left' : 'heroicon-o-envelope')
                 ->actions([
                     Action::make('view')

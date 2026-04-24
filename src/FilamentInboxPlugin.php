@@ -4,6 +4,7 @@ namespace FilamentInbox;
 
 use Filament\Contracts\Plugin;
 use Filament\Facades\Filament;
+use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
 use FilamentInbox\Models\Message;
 use FilamentInbox\Pages\Inbox;
@@ -13,7 +14,6 @@ use FilamentInbox\Pages\Trash;
 use FilamentInbox\Pages\ViewMessage;
 use FilamentInbox\Pages\ViewSentMessage;
 use FilamentInbox\Widgets\InboxStatsWidget;
-use Filament\Models\Contracts\HasAvatar;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -93,7 +93,7 @@ class FilamentInboxPlugin implements Plugin
     /**
      * Get user IDs belonging to a tenant.
      *
-     * @return \Illuminate\Support\Collection<int, mixed>|null
+     * @return Collection<int, mixed>|null
      */
     protected static function getTenantUserIds(Model $tenant): ?Collection
     {
@@ -142,7 +142,7 @@ class FilamentInboxPlugin implements Plugin
     /**
      * Render stacked avatars + names for multiple users.
      *
-     * @param  \Illuminate\Support\Collection<int, Model>  $users
+     * @param  Collection<int, Model>  $users
      */
     public static function renderStackedAvatarsWithNames(Collection $users): HtmlString
     {

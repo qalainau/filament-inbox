@@ -2,6 +2,7 @@
 
 namespace FilamentInbox\Models;
 
+use FilamentInbox\Database\Factories\MessageRecipientFactory;
 use FilamentInbox\FilamentInboxServiceProvider;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MessageRecipient extends Model
 {
-    /** @use HasFactory<\FilamentInbox\Database\Factories\MessageRecipientFactory> */
+    /** @use HasFactory<MessageRecipientFactory> */
     use HasFactory;
 
     protected $table = 'inbox_message_recipients';
@@ -31,9 +32,9 @@ class MessageRecipient extends Model
         ];
     }
 
-    protected static function newFactory(): \FilamentInbox\Database\Factories\MessageRecipientFactory
+    protected static function newFactory(): MessageRecipientFactory
     {
-        return \FilamentInbox\Database\Factories\MessageRecipientFactory::new();
+        return MessageRecipientFactory::new();
     }
 
     public function message(): BelongsTo
@@ -45,5 +46,4 @@ class MessageRecipient extends Model
     {
         return $this->belongsTo(FilamentInboxServiceProvider::getUserModel(), 'recipient_id');
     }
-
 }

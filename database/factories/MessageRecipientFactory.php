@@ -2,6 +2,7 @@
 
 namespace FilamentInbox\Database\Factories;
 
+use FilamentInbox\FilamentInboxServiceProvider;
 use FilamentInbox\Models\Message;
 use FilamentInbox\Models\MessageRecipient;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -15,7 +16,7 @@ class MessageRecipientFactory extends Factory
 
     public function definition(): array
     {
-        $userModel = \FilamentInbox\FilamentInboxServiceProvider::getUserModel();
+        $userModel = FilamentInboxServiceProvider::getUserModel();
 
         return [
             'message_id' => Message::factory(),
