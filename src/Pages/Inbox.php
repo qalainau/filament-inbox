@@ -174,6 +174,7 @@ class Inbox extends Page implements HasTable
                         ->options(fn () => FilamentInboxPlugin::getRecipientOptions())
                         ->searchable()
                         ->preload()
+                        ->allowHtml()
                         ->required(),
 
                     TextInput::make('subject')

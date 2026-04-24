@@ -131,6 +131,7 @@ class ViewMessage extends Page
                         ->options(fn () => FilamentInboxPlugin::getRecipientOptions())
                         ->searchable()
                         ->preload()
+                        ->allowHtml()
                         ->required(),
 
                     RichEditor::make('body')
