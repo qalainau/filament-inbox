@@ -1,4 +1,4 @@
-# Filament inBox
+# Filament Inbox
 
 [![CI](https://github.com/qalainau/filament-inbox/actions/workflows/ci.yml/badge.svg)](https://github.com/qalainau/filament-inbox/actions/workflows/ci.yml)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/qalainau/filament-inbox.svg)](https://packagist.org/packages/qalainau/filament-inbox)
@@ -6,7 +6,6 @@
 
 Email-like inbox messaging plugin for [Filament v5](https://filamentphp.com). Add a complete internal messaging system to your admin panel — inbox, sent, starred, trash, threading, forwarding, read receipts, and more.
 
-Filament inBox provides a Gmail-style messaging experience, built natively for Filament.
 
 ## Features
 

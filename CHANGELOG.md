@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to `filament-inBox` will be documented in this file.
+All notable changes to `filament-inbox` will be documented in this file.
 
 ## v1.0.0 - 2026-04-24
 
