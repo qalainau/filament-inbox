@@ -70,6 +70,7 @@ class StarredMessages extends Page implements HasTable
                     ->dateTime()
                     ->sortable(),
             ])
+            ->emptyStateHeading(__('filament-inbox::messages.empty_box'))
             ->recordActions([
                 Action::make('unstar')
                     ->icon(Heroicon::Star)

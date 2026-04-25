@@ -69,6 +69,7 @@ class Trash extends Page implements HasTable
                     ->dateTime()
                     ->sortable(),
             ])
+            ->emptyStateHeading(__('filament-inbox::messages.empty_box'))
             ->recordActions([
                 Action::make('restore')
                     ->icon(Heroicon::ArrowUturnLeft)

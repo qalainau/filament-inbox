@@ -104,6 +104,7 @@ class Inbox extends Page implements HasTable
                     ->dateTime()
                     ->sortable(),
             ])
+            ->emptyStateHeading(__('filament-inbox::messages.empty_box'))
             ->filters([
                 SelectFilter::make('sender')
                     ->label(__('filament-inbox::messages.from'))

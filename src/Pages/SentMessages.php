@@ -117,6 +117,7 @@ class SentMessages extends Page implements HasTable
                     ->dateTime()
                     ->sortable(),
             ])
+            ->emptyStateHeading(__('filament-inbox::messages.empty_box'))
             ->filters([
                 SelectFilter::make('recipient')
                     ->label(__('filament-inbox::messages.to'))
