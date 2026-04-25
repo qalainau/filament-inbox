@@ -18,6 +18,9 @@ return [
     'deleted_at' => 'Verwijderd op',
     'status' => 'Status',
 
+    // Empty state
+    'empty_box' => 'Geen berichten gevonden.',
+    
     // Read status
     'unread' => 'Ongelezen',
     'read' => 'Gelezen',
