@@ -13,7 +13,7 @@ return [
     'to' => 'Aan',
     'subject' => 'Onderwerp',
     'received' => 'Ontvangen',
-    'sent_at' => 'verzonden op',
+    'sent_at' => 'Verzonden op',
     'starred_at' => 'Gemarkeerd op',
     'deleted_at' => 'Verwijderd op',
     'status' => 'Status',
