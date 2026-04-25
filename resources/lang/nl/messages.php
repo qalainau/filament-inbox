@@ -24,7 +24,7 @@ return [
     // Read status
     'unread' => 'Ongelezen',
     'read' => 'Gelezen',
-    'read_count' => 'Read :read/:total',
+    'read_count' => 'Gelezen :read/:total',
 
     // Filters
     'unread_only' => 'Alleen ongelezen',
