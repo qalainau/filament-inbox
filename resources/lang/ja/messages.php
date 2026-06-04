@@ -18,6 +18,9 @@ return [
     'deleted_at' => '削除日時',
     'status' => 'ステータス',
 
+    // Empty state
+    'empty_box' => 'メッセージが見つかりません。',
+
     // Read status
     'unread' => '未読',
     'read' => '既読',

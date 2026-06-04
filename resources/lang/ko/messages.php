@@ -18,6 +18,9 @@ return [
     'deleted_at' => '삭제일시',
     'status' => '상태',
 
+    // Empty state
+    'empty_box' => '메시지를 찾을 수 없습니다.',
+
     // Read status
     'unread' => '읽지 않음',
     'read' => '읽음',

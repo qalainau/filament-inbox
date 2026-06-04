@@ -18,6 +18,9 @@ return [
     'deleted_at' => 'Deleted At',
     'status' => 'Status',
 
+    // Empty state
+    'empty_box' => 'No messages found.',
+
     // Read status
     'unread' => 'Unread',
     'read' => 'Read',

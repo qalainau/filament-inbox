@@ -18,6 +18,9 @@ return [
     'deleted_at' => 'سڕاوەتەوە لە',
     'status' => 'بارودۆخ',
 
+    // Empty state
+    'empty_box' => 'هیچ نامەیەک نەدۆزرایەوە.',
+
     // Read status
     'unread' => 'نەخوێنراوەتەوە',
     'read' => 'خوێنراوەتەوە',

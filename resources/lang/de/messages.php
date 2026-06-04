@@ -18,6 +18,9 @@ return [
     'deleted_at' => 'Gelöscht am',
     'status' => 'Status',
 
+    // Empty state
+    'empty_box' => 'Keine Nachrichten gefunden.',
+
     // Read status
     'unread' => 'Ungelesen',
     'read' => 'Gelesen',

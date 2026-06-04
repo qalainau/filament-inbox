@@ -18,6 +18,9 @@ return [
     'deleted_at' => 'Eliminado',
     'status' => 'Estado',
 
+    // Empty state
+    'empty_box' => 'No se encontraron mensajes.',
+
     // Read status
     'unread' => 'No leído',
     'read' => 'Leído',

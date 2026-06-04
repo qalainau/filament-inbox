@@ -18,6 +18,9 @@ return [
     'deleted_at' => '删除时间',
     'status' => '状态',
 
+    // Empty state
+    'empty_box' => '未找到任何消息。',
+
     // Read status
     'unread' => '未读',
     'read' => '已读',
