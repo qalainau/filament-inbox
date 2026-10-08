@@ -3,6 +3,7 @@
 [![CI](https://github.com/qalainau/filament-inbox/actions/workflows/ci.yml/badge.svg)](https://github.com/qalainau/filament-inbox/actions/workflows/ci.yml)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/qalainau/filament-inbox.svg)](https://packagist.org/packages/qalainau/filament-inbox)
 [![Total Downloads](https://img.shields.io/packagist/dt/qalainau/filament-inbox.svg)](https://packagist.org/packages/qalainau/filament-inbox)
+[![Newsletter](https://img.shields.io/badge/newsletter-subscribe-0ea5a3.svg)](https://webllsystem.com/filament/?ref=filament-inbox)
 
 Email-like inbox messaging plugin for [Filament v5](https://filamentphp.com). Add a complete internal messaging system to your admin panel — inbox, sent, starred, trash, threading, forwarding, read receipts, and more.
 
@@ -135,6 +136,12 @@ composer test
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+
+## Stay Updated
+
+Get release notes, upgrade guides for new Filament versions, and early access to new plugins — a few emails a year, no spam.
+
+**[Subscribe to the newsletter →](https://webllsystem.com/filament/?ref=filament-inbox)**
 
 ## License
 
